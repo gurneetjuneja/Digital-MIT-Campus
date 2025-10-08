@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #4B0082;
+    --primary-light: #6B238E;
+    --primary-lighter: #9B4BC0;
+    --primary-lightest: #E5D1F2;
+    --secondary: #B8860B;
+    --accent: #FF6B6B;
+    --success: #4ECDC4;
+    --warning: #FF6B6B;
+    --error: #dc2626;
+    --background: #f8f9fa;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-800 min-h-screen;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md transition-all duration-200 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-[#4B0082] text-white hover:bg-[#6B238E] focus:ring-[#4B0082];
+  }
+
+  .btn-secondary {
+    @apply bg-[#B8860B] text-white hover:bg-[#966C09] focus:ring-[#B8860B];
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+
+  .btn-warning {
+    @apply bg-[#FF6B6B] text-white hover:bg-[#FF5252] focus:ring-[#FF6B6B];
+  }
+
+  .btn-outline {
+    @apply border border-[#4B0082] text-[#4B0082] hover:bg-[#E5D1F2] focus:ring-[#4B0082];
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-sm p-6 transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:shadow-md hover:-translate-y-1;
+  }
+
+  .form-input {
+    @apply block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm 
+    focus:outline-none focus:ring-[#4B0082] focus:border-[#4B0082] sm:text-sm;
+  }
+
+  .form-select {
+    @apply block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm 
+    focus:outline-none focus:ring-[#4B0082] focus:border-[#4B0082] sm:text-sm;
+  }
+
+  .form-checkbox {
+    @apply h-4 w-4 text-[#4B0082] focus:ring-[#4B0082] border-gray-300 rounded;
+  }
+  
+  .sidebar {
+    @apply bg-white shadow-md flex flex-col h-screen transition-all duration-300;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center p-2 rounded-md text-gray-700 hover:bg-[#E5D1F2] transition-all duration-200;
+  }
+
+  .sidebar-item.active {
+    @apply bg-[#4B0082] text-white hover:bg-[#6B238E];
+  }
+
+  .badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+  }
+
+  .badge-success {
+    @apply bg-[#4ECDC4]/20 text-[#2A9D8F];
+  }
+
+  .badge-warning {
+    @apply bg-[#FF6B6B]/20 text-[#E76F51];
+  }
+
+  .badge-error {
+    @apply bg-red-100 text-red-700;
+  }
+
+  .badge-info {
+    @apply bg-[#E5D1F2] text-[#4B0082];
+  }
+
+  .table-container {
+    @apply rounded-lg overflow-hidden shadow-sm;
+  }
+
+  .table {
+    @apply min-w-full bg-white;
+  }
+
+  .table th {
+    @apply px-6 py-3 text-left text-xs font-semibold text-[#4B0082] uppercase tracking-wider bg-[#E5D1F2]/50;
+  }
+
+  .table td {
+    @apply px-6 py-4 text-sm text-gray-800 border-t border-gray-200;
+  }
+
+  .table tr:hover {
+    @apply bg-[#E5D1F2]/10;
+  }
+
+  /* Profile avatar styles */
+  .profile-avatar {
+    @apply w-8 h-8 rounded-full bg-[#4B0082] text-white flex items-center justify-center;
+  }
+
+  .profile-avatar-lg {
+    @apply w-10 h-10 rounded-full bg-[#4B0082] text-white flex items-center justify-center;
+  }
+
+  /* Link styles */
+  .link {
+    @apply text-[#4B0082] hover:text-[#6B238E] font-medium transition-colors duration-200;
+  }
+
+  /* Header title */
+  .header-title {
+    @apply text-[#4B0082] text-xl font-semibold;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+}
