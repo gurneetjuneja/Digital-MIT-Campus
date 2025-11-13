@@ -13,7 +13,6 @@ const FacultyHistory: React.FC = () => {
     const { gatePasses } = useGatePass();
     const navigate = useNavigate();
 
-    // Show all gate passes without department filtering
     const [filteredPasses, setFilteredPasses] = useState(gatePasses);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -25,7 +24,6 @@ const FacultyHistory: React.FC = () => {
     useEffect(() => {
         let filtered = [...gatePasses];
 
-        // Apply search filter
         if (searchTerm) {
             filtered = filtered.filter(pass =>
                 pass.passNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -35,12 +33,10 @@ const FacultyHistory: React.FC = () => {
             );
         }
 
-        // Apply department filter
         if (departmentFilter !== 'all') {
             filtered = filtered.filter(pass => pass.department === departmentFilter);
         }
 
-        // Apply status filter
         if (statusFilter !== 'all') {
             filtered = filtered.filter(pass => {
                 if (statusFilter === 'pending') {
@@ -58,7 +54,6 @@ const FacultyHistory: React.FC = () => {
             });
         }
 
-        // Apply date filter
         const today = new Date();
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
@@ -90,7 +85,6 @@ const FacultyHistory: React.FC = () => {
                 break;
         }
 
-        // Apply sorting
         filtered.sort((a, b) => {
             if (sortBy === 'date') {
                 return sortOrder === 'desc'
@@ -125,7 +119,6 @@ const FacultyHistory: React.FC = () => {
 
                     <div className="bg-white rounded-lg shadow-sm p-6">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                            {/* Search */}
                             <div className="relative flex-1">
                                 <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Search size={16} className="text-gray-400" />
@@ -139,7 +132,6 @@ const FacultyHistory: React.FC = () => {
                                 />
                             </div>
 
-                            {/* Filters */}
                             <div className="flex flex-wrap gap-2">
                                 <select
                                     value={departmentFilter}

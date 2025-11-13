@@ -11,7 +11,7 @@ import { generateGatePassPDF } from '../../utils/pdfGenerator';
 const AdminApproveGatePass: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getGatePassById, approveAdminGatePass, rejectAdminGatePass } = useGatePass();
+  const { getGatePassById, approveAdminGatePass, rejectAdminGatePass, gatePasses } = useGatePass();
   
   const [gatePass, setGatePass] = useState<any>(null);
   const [remarks, setRemarks] = useState('');
@@ -29,12 +29,11 @@ const AdminApproveGatePass: React.FC = () => {
         navigate('/admin');
       }
     }
-  }, [id, getGatePassById, navigate]);
+  }, [id, gatePasses, getGatePassById, navigate]);
   
   const handleApprove = async () => {
     if (!gatePass) return;
     
-    // Check if all items are verified by admin
     if (!gatePass.items.every(item => item.adminVerified)) {
       toast.error('Please verify all items before approving');
       return;
@@ -85,19 +84,20 @@ const AdminApproveGatePass: React.FC = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header title="Final Approval" />
         
-        <main className="flex-1 overflow-y-auto p-4">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <button 
+            type="button"
             onClick={() => navigate('/admin')}
-            className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+            className="flex items-center text-[#4B0082] hover:text-[#6B238E] mb-4 transition-colors"
           >
             <ArrowLeft size={16} className="mr-1" />
             Back to Dashboard
           </button>
           
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex justify-between items-start mb-6">
+          <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
               <div>
-                <h2 className="text-xl font-semibold text-gray-800">{gatePass.passNumber}</h2>
+                <h2 className="text-xl md:text-2xl font-semibold text-[#4B0082]">{gatePass.passNumber}</h2>
                 <p className="text-gray-600">
                   Created on {format(parseISO(gatePass.createdAt), 'MMM dd, yyyy')} by {gatePass.createdBy.name}
                 </p>
@@ -308,7 +308,6 @@ const AdminApproveGatePass: React.FC = () => {
         </main>
       </div>
       
-      {/* Reject Modal */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">

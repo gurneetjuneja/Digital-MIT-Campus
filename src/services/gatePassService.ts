@@ -14,7 +14,6 @@ import {
 import { db } from '../config/firebase';
 import { GatePass, ApprovalStatus } from '../types';
 
-// Custom error class for Firebase operations
 class FirebaseOperationError extends Error {
     constructor(message: string, public originalError: FirestoreError) {
         super(message);
@@ -22,19 +21,16 @@ class FirebaseOperationError extends Error {
     }
 }
 
-// Helper function to convert Firestore timestamp to string
 const convertTimestamp = (timestamp: Timestamp): string => {
     return timestamp.toDate().toISOString();
 };
 
-// Helper function to validate gate pass data
 const validateGatePassData = (data: Partial<GatePass>): boolean => {
     const requiredFields = ['passNumber', 'items', 'createdBy', 'submittedBy', 'department'];
     return requiredFields.every(field => field in data && data[field] !== null && data[field] !== undefined);
 };
 
 export const gatePassService = {
-    // Create a new gate pass
     async createGatePass(gatePassData: Omit<GatePass, 'id'>): Promise<string> {
         try {
             if (!validateGatePassData(gatePassData)) {
@@ -62,7 +58,6 @@ export const gatePassService = {
         }
     },
 
-    // Get gate pass by ID
     async getGatePassById(id: string): Promise<GatePass | null> {
         try {
             const docRef = doc(db, 'gatePasses', id);
@@ -109,7 +104,6 @@ export const gatePassService = {
         }
     },
 
-    // Get gate passes by department
     async getGatePassesByDepartment(department: string): Promise<GatePass[]> {
         try {
             const q = query(
@@ -158,7 +152,6 @@ export const gatePassService = {
         }
     },
 
-    // Update gate pass approval status
     async updateApprovalStatus(
         gatePassId: string,
         stage: string,
@@ -173,12 +166,10 @@ export const gatePassService = {
                 throw new Error('Gate pass not found');
             }
 
-            // Validate the stage transition
             if (gatePass.currentStage !== stage) {
                 throw new Error('Invalid approval stage transition');
             }
 
-            // Determine next stage based on current stage and status
             let nextStage = stage;
             if (status === 'approved') {
                 switch (stage) {
@@ -206,7 +197,6 @@ export const gatePassService = {
         }
     },
 
-    // Get all gate passes for security
     async getAllGatePasses(): Promise<GatePass[]> {
         try {
             const q = query(

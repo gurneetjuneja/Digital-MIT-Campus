@@ -64,18 +64,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // Get additional user data from Firestore
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.email!));
           
           if (userDoc.exists()) {
             const userData = userDoc.data() as User;
             setCurrentUser(userData);
-            // Fetch all users if the current user is an admin
             if (userData.role === 'admin') {
               await fetchUsers();
             }
           } else {
-            // Try to find user by email in case the document ID is different
             const usersRef = collection(db, 'users');
             const q = query(usersRef, where('email', '==', firebaseUser.email));
             const querySnapshot = await getDocs(q);
@@ -83,7 +80,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (!querySnapshot.empty) {
               const userData = querySnapshot.docs[0].data() as User;
               setCurrentUser(userData);
-              // Fetch all users if the current user is an admin
               if (userData.role === 'admin') {
                 await fetchUsers();
               }
@@ -114,14 +110,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
-      // Sign in with Firebase
       await signInWithEmailAndPassword(auth, email, password);
       
-      // Get additional user data from Firestore
       const userDoc = await getDoc(doc(db, 'users', email));
       
       if (!userDoc.exists()) {
-        // Try to find user by email in case the document ID is different
         const usersRef = collection(db, 'users');
         const q = query(usersRef, where('email', '==', email));
         const querySnapshot = await getDocs(q);

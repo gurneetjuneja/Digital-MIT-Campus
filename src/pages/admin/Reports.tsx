@@ -18,7 +18,6 @@ import {
 import { generateAnalyticsReportPDF } from '../../utils/pdfGenerator';
 import toast from 'react-hot-toast';
 
-// Register ChartJS components
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -34,10 +33,8 @@ const Reports: React.FC = () => {
     const [dateRange, setDateRange] = useState('week');
     const [department, setDepartment] = useState('all');
 
-    // Get all unique departments
     const departments = Array.from(new Set(gatePasses.map(pass => pass.department)));
 
-    // Filter passes based on date range and department
     const getFilteredPasses = () => {
         const now = new Date();
         let startDate = new Date();
@@ -53,7 +50,7 @@ const Reports: React.FC = () => {
                 startDate.setFullYear(now.getFullYear() - 1);
                 break;
             default:
-                startDate = new Date(0); // All time
+                startDate = new Date(0);
         }
 
         return gatePasses.filter(pass => {
@@ -66,13 +63,11 @@ const Reports: React.FC = () => {
 
     const filteredPasses = getFilteredPasses();
 
-    // Calculate statistics
     const totalPasses = filteredPasses.length;
     const approvedPasses = filteredPasses.filter(pass => pass.status === 'approved').length;
     const rejectedPasses = filteredPasses.filter(pass => pass.status === 'rejected').length;
     const pendingPasses = filteredPasses.filter(pass => pass.status === 'pending').length;
 
-    // Prepare chart data
     const chartData = {
         labels: ['Approved', 'Rejected', 'Pending'],
         datasets: [
@@ -97,7 +92,6 @@ const Reports: React.FC = () => {
         },
     };
 
-    // Handle report download
     const downloadReport = async () => {
         try {
             const reportData = {
@@ -115,7 +109,6 @@ const Reports: React.FC = () => {
         }
     };
 
-    // Calculate department-wise statistics
     const calculateDepartmentStats = () => {
         const stats: { [key: string]: { total: number, approved: number, rejected: number, pending: number } } = {};
 
@@ -138,34 +131,36 @@ const Reports: React.FC = () => {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Header title="Reports" />
 
-                <main className="flex-1 overflow-y-auto p-4">
+                <main className="flex-1 overflow-y-auto p-4 md:p-6">
                     <button
+                        type="button"
                         onClick={() => navigate('/admin')}
-                        className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+                        className="flex items-center text-[#4B0082] hover:text-[#6B238E] mb-4 transition-colors"
                     >
                         <ArrowLeft size={16} className="mr-1" />
                         Back to Dashboard
                     </button>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
                         <div className="lg:col-span-2">
-                            <div className="bg-white rounded-lg shadow-sm p-6">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-xl font-semibold text-gray-800">Gate Pass Analytics</h2>
+                            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+                                    <h2 className="text-xl md:text-2xl font-semibold text-[#4B0082]">Gate Pass Analytics</h2>
                                     <button
+                                        type="button"
                                         onClick={downloadReport}
-                                        className="btn btn-outline flex items-center"
+                                        className="btn btn-outline flex items-center justify-center"
                                     >
                                         <Download size={16} className="mr-2" />
                                         Download Report
                                     </button>
                                 </div>
 
-                                <div className="flex flex-wrap gap-4 mb-6">
+                                <div className="flex flex-col sm:flex-row gap-4 mb-6">
                                     <select
                                         value={dateRange}
                                         onChange={(e) => setDateRange(e.target.value)}
-                                        className="form-select"
+                                        className="form-select flex-1"
                                     >
                                         <option value="week">Last 7 Days</option>
                                         <option value="month">Last 30 Days</option>
@@ -176,7 +171,7 @@ const Reports: React.FC = () => {
                                     <select
                                         value={department}
                                         onChange={(e) => setDepartment(e.target.value)}
-                                        className="form-select"
+                                        className="form-select flex-1"
                                     >
                                         <option value="all">All Departments</option>
                                         {departments.map(dept => (
@@ -185,43 +180,43 @@ const Reports: React.FC = () => {
                                     </select>
                                 </div>
 
-                                <div className="h-80">
+                                <div className="h-64 md:h-80">
                                     <Bar data={chartData} options={chartOptions} />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="space-y-6">
-                            <div className="bg-white rounded-lg shadow-sm p-6">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Summary</h3>
+                        <div className="space-y-4 md:space-y-6">
+                            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+                                <h3 className="text-base md:text-lg font-semibold text-[#4B0082] mb-4">Summary</h3>
                                 <div className="space-y-4">
                                     <div>
-                                        <p className="text-sm text-gray-600">Total Gate Passes</p>
-                                        <p className="text-2xl font-semibold">{totalPasses}</p>
+                                        <p className="text-xs md:text-sm text-[#6B238E]">Total Gate Passes</p>
+                                        <p className="text-xl md:text-2xl font-semibold text-[#4B0082]">{totalPasses}</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-600">Approved</p>
-                                        <p className="text-2xl font-semibold text-green-600">{approvedPasses}</p>
+                                        <p className="text-xs md:text-sm text-[#6B238E]">Approved</p>
+                                        <p className="text-xl md:text-2xl font-semibold text-green-600">{approvedPasses}</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-600">Rejected</p>
-                                        <p className="text-2xl font-semibold text-red-600">{rejectedPasses}</p>
+                                        <p className="text-xs md:text-sm text-[#6B238E]">Rejected</p>
+                                        <p className="text-xl md:text-2xl font-semibold text-red-600">{rejectedPasses}</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-600">Pending</p>
-                                        <p className="text-2xl font-semibold text-yellow-600">{pendingPasses}</p>
+                                        <p className="text-xs md:text-sm text-[#6B238E]">Pending</p>
+                                        <p className="text-xl md:text-2xl font-semibold text-yellow-600">{pendingPasses}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-lg shadow-sm p-6">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+                                <h3 className="text-base md:text-lg font-semibold text-[#4B0082] mb-4">Quick Actions</h3>
                                 <div className="space-y-2">
-                                    <button className="btn btn-outline w-full justify-start">
+                                    <button type="button" className="btn btn-outline w-full justify-start">
                                         <Filter size={16} className="mr-2" />
                                         Generate Custom Report
                                     </button>
-                                    <button className="btn btn-outline w-full justify-start">
+                                    <button type="button" className="btn btn-outline w-full justify-start">
                                         <Download size={16} className="mr-2" />
                                         Export All Data
                                     </button>

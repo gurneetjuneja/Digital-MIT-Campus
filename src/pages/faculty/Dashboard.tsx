@@ -11,7 +11,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import qrCodeImage from '../../assets/Rickrolling_QR_code.png';
 
-// Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const FacultyDashboard: React.FC = () => {
@@ -27,17 +26,14 @@ const FacultyDashboard: React.FC = () => {
   useEffect(() => {
     if (!loading && gatePasses) {
       try {
-        // Get passes that need faculty approval
         const approvalPasses = getGatePassesByCurrentStage('facultyApproval') || [];
         setPendingApproval(approvalPasses);
         
-        // Get recent passes (sorted by creation date)
         const sorted = [...(gatePasses || [])].sort((a, b) => 
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         ).slice(0, 5);
         setRecentPasses(sorted);
         
-        // Get approved/rejected counts
         const approved = gatePasses.filter(pass => 
           pass.approvalStages?.facultyApproval?.status === 'approved'
         ).length;
@@ -88,7 +84,6 @@ const FacultyDashboard: React.FC = () => {
     );
   }
   
-  // Chart data
   const chartData = {
     labels: ['Pending', 'Approved', 'Rejected'],
     datasets: [

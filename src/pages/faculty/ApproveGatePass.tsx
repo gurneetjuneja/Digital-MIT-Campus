@@ -10,14 +10,14 @@ import toast from 'react-hot-toast';
 const ApproveGatePass: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getGatePassById, approveFacultyGatePass, rejectFacultyGatePass } = useGatePass();
+  const { getGatePassById, approveFacultyGatePass, rejectFacultyGatePass, gatePasses } = useGatePass();
   
   const [gatePass, setGatePass] = useState<any>(null);
   const [remarks, setRemarks] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
-  
+
   useEffect(() => {
     if (id) {
       const pass = getGatePassById(id);
@@ -28,12 +28,11 @@ const ApproveGatePass: React.FC = () => {
         navigate('/faculty');
       }
     }
-  }, [id, getGatePassById, navigate]);
+  }, [id, gatePasses, getGatePassById, navigate]);
   
   const handleApprove = async () => {
     if (!gatePass) return;
     
-    // Check if all items are verified
     if (!gatePass.items.every(item => item.isChecked)) {
       toast.error('Please verify all items before approving');
       return;
@@ -197,7 +196,6 @@ const ApproveGatePass: React.FC = () => {
                               className="form-checkbox"
                               checked={item.isChecked}
                               onChange={() => {
-                                // Update local state only
                                 const updatedItems = gatePass.items.map(i => 
                                   i.id === item.id ? { ...i, isChecked: !i.isChecked } : i
                                 );
@@ -260,7 +258,6 @@ const ApproveGatePass: React.FC = () => {
         </main>
       </div>
       
-      {/* Reject Modal */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">

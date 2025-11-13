@@ -2,14 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
-// Contexts
 import { AuthProvider } from './contexts/AuthContext';
 import { GatePassProvider } from './contexts/GatePassContext';
+import { VCRSProvider } from './contexts/VCRSContext';
 
-// Layout Components
 import ProtectedRoute from './components/common/ProtectedRoute';
 
-// Pages
 import Login from './pages/Login';
 import Setup from './pages/Setup';
 import SecurityDashboard from './pages/security/Dashboard';
@@ -19,6 +17,8 @@ import ViewGatePass from './pages/common/ViewGatePass';
 import FacultyDashboard from './pages/faculty/Dashboard';
 import FacultyHistory from './pages/faculty/History';
 import FacultyApproval from './pages/faculty/ApproveGatePass';
+import VCRSDashboard from './pages/faculty/VCRSDashboard';
+import SubmitBudgetApproval from './pages/faculty/SubmitBudgetApproval';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminApproval from './pages/admin/ApproveGatePass';
 import PendingApprovals from './pages/admin/PendingApprovals';
@@ -26,19 +26,19 @@ import Users from './pages/admin/Users';
 import EditUser from './pages/admin/EditUser';
 import Reports from './pages/admin/Reports';
 import Settings from './pages/admin/Settings';
+import BudgetApprovals from './pages/admin/BudgetApprovals';
 import NotFound from './pages/NotFound';
 
 function App() {
   return (
     <AuthProvider>
       <GatePassProvider>
-        <Router>
+        <VCRSProvider>
+          <Router>
           <Routes>
-            {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/setup" element={<Setup />} />
             
-            {/* Security Routes */}
             <Route 
               path="/security" 
               element={
@@ -80,7 +80,6 @@ function App() {
               } 
             />
             
-            {/* Faculty Routes */}
             <Route 
               path="/faculty" 
               element={
@@ -113,8 +112,23 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/faculty/vcrs" 
+              element={
+                <ProtectedRoute allowedRoles={['faculty']}>
+                  <VCRSDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/faculty/vcrs/submit" 
+              element={
+                <ProtectedRoute allowedRoles={['faculty']}>
+                  <SubmitBudgetApproval />
+                </ProtectedRoute>
+              } 
+            />
             
-            {/* Admin Routes */}
             <Route 
               path="/admin" 
               element={
@@ -164,6 +178,14 @@ function App() {
               } 
             />
             <Route 
+              path="/admin/budget-approvals" 
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <BudgetApprovals />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/admin/approve/:id" 
               element={
                 <ProtectedRoute allowedRoles={['admin']}>
@@ -180,7 +202,6 @@ function App() {
               } 
             />
             
-            {/* Root and Not found */}
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -201,6 +222,7 @@ function App() {
             }}
           />
         </Router>
+        </VCRSProvider>
       </GatePassProvider>
     </AuthProvider>
   );

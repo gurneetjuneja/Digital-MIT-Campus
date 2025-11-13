@@ -3,7 +3,6 @@ import { format } from 'date-fns';
 import { GatePass } from '../types';
 import logoImage from '../assets/mit-adt-logo.png';
 
-// Common header with logo for all PDFs
 const getHeaderWithLogo = (title: string, passNumber?: string, date?: string) => `
     <div style="font-family: Arial, sans-serif;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -29,7 +28,6 @@ const getHeaderWithLogo = (title: string, passNumber?: string, date?: string) =>
     </div>
 `;
 
-// Common PDF options
 const defaultPdfOptions = {
     margin: 10,
     image: { type: 'jpeg', quality: 0.98 },
@@ -37,7 +35,6 @@ const defaultPdfOptions = {
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
 };
 
-// Generate PDF for Users List
 export const generateUsersPDF = async (users: any[]) => {
     const content = `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column;">
@@ -113,7 +110,6 @@ export const generateUsersPDF = async (users: any[]) => {
     document.body.removeChild(element);
 };
 
-// Generate PDF for Gate Pass
 export const generateGatePassPDF = async (gatePass: GatePass) => {
     const content = `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column;">
@@ -217,7 +213,6 @@ export const generateGatePassPDF = async (gatePass: GatePass) => {
     document.body.removeChild(element);
 };
 
-// Generate Analytics Report PDF
 export const generateAnalyticsReportPDF = async (data: any) => {
     const content = `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column;">
@@ -308,7 +303,6 @@ export const generateAnalyticsReportPDF = async (data: any) => {
     document.body.removeChild(element);
 };
 
-// Helper function for status badges in PDFs
 const getStatusBadgeHTML = (status: string) => {
     const styles = {
         approved: {

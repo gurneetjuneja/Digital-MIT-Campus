@@ -3,7 +3,6 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 
-// Your Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBA_O91Uspp183DR820-8YRnJawSmHrXTU",
     authDomain: "digitalgatepassmanagement.firebaseapp.com",
@@ -14,10 +13,8 @@ const firebaseConfig = {
     measurementId: "G-YQH5VRD3KP"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const analytics = getAnalytics(app);

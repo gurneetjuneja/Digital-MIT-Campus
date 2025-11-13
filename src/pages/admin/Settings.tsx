@@ -9,7 +9,6 @@ const Settings: React.FC = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('general');
 
-    // Settings state
     const [settings, setSettings] = useState({
         instituteName: 'MIT ADT University',
         emailDomain: '@mituniversity.edu.in',
@@ -30,7 +29,6 @@ const Settings: React.FC = () => {
     });
 
     const handleSave = () => {
-        // TODO: Implement settings save
         toast.success('Settings saved successfully');
     };
 
@@ -41,22 +39,24 @@ const Settings: React.FC = () => {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Header title="Settings" />
 
-                <main className="flex-1 overflow-y-auto p-4">
+                <main className="flex-1 overflow-y-auto p-4 md:p-6">
                     <button
+                        type="button"
                         onClick={() => navigate('/admin')}
-                        className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+                        className="flex items-center text-[#4B0082] hover:text-[#6B238E] mb-4 transition-colors"
                     >
                         <ArrowLeft size={16} className="mr-1" />
                         Back to Dashboard
                     </button>
 
                     <div className="bg-white rounded-lg shadow-sm">
-                        <div className="border-b border-gray-200">
-                            <nav className="flex -mb-px">
+                        <div className="border-b border-gray-200 overflow-x-auto">
+                            <nav className="flex -mb-px min-w-max">
                                 <button
+                                    type="button"
                                     onClick={() => setActiveTab('general')}
-                                    className={`py-4 px-6 border-b-2 font-medium text-sm ${activeTab === 'general'
-                                        ? 'border-blue-500 text-blue-600'
+                                    className={`py-4 px-4 md:px-6 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${activeTab === 'general'
+                                        ? 'border-[#4B0082] text-[#4B0082]'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
@@ -64,9 +64,10 @@ const Settings: React.FC = () => {
                                     General
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => setActiveTab('notifications')}
-                                    className={`py-4 px-6 border-b-2 font-medium text-sm ${activeTab === 'notifications'
-                                        ? 'border-blue-500 text-blue-600'
+                                    className={`py-4 px-4 md:px-6 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${activeTab === 'notifications'
+                                        ? 'border-[#4B0082] text-[#4B0082]'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
@@ -74,9 +75,10 @@ const Settings: React.FC = () => {
                                     Notifications
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => setActiveTab('security')}
-                                    className={`py-4 px-6 border-b-2 font-medium text-sm ${activeTab === 'security'
-                                        ? 'border-blue-500 text-blue-600'
+                                    className={`py-4 px-4 md:px-6 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${activeTab === 'security'
+                                        ? 'border-[#4B0082] text-[#4B0082]'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
@@ -84,9 +86,10 @@ const Settings: React.FC = () => {
                                     Security
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => setActiveTab('data')}
-                                    className={`py-4 px-6 border-b-2 font-medium text-sm ${activeTab === 'data'
-                                        ? 'border-blue-500 text-blue-600'
+                                    className={`py-4 px-4 md:px-6 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${activeTab === 'data'
+                                        ? 'border-[#4B0082] text-[#4B0082]'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
@@ -96,7 +99,7 @@ const Settings: React.FC = () => {
                             </nav>
                         </div>
 
-                        <div className="p-6">
+                        <div className="p-4 md:p-6">
                             {activeTab === 'general' && (
                                 <div className="space-y-6">
                                     <div>
@@ -225,6 +228,7 @@ const Settings: React.FC = () => {
 
                             <div className="mt-6 flex justify-end">
                                 <button
+                                    type="button"
                                     onClick={handleSave}
                                     className="btn btn-primary flex items-center"
                                 >

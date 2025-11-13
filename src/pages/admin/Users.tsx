@@ -22,7 +22,6 @@ const Users: React.FC = () => {
         fetchUsers();
     }, []);
 
-    // Filter users based on search and role
     const filteredUsers = users?.filter(user => {
         const matchesSearch = searchTerm === '' ||
             user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,7 +36,6 @@ const Users: React.FC = () => {
     const generatePDF = async () => {
         setGenerating(true);
 
-        // Create the HTML content
         const content = `
             <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column;">
                 <!-- Header and main content wrapper -->
@@ -110,7 +108,6 @@ const Users: React.FC = () => {
             </div>
         `;
 
-        // PDF options
         const options = {
             margin: 10,
             filename: `users-list-${format(new Date(), 'yyyy-MM-dd')}.pdf`,
@@ -120,7 +117,6 @@ const Users: React.FC = () => {
         };
 
         try {
-            // Generate PDF
             const element = document.createElement('div');
             element.innerHTML = content;
             document.body.appendChild(element);
@@ -152,7 +148,7 @@ const Users: React.FC = () => {
             try {
                 setLoading(true);
                 await deleteDoc(doc(db, 'users', userToDelete.email));
-                await fetchUsers(); // Refresh the users list
+                await fetchUsers();
                 toast.success('User deleted successfully');
             } catch (error) {
                 console.error('Error deleting user:', error);
@@ -164,7 +160,6 @@ const Users: React.FC = () => {
     };
 
     const handleEditUser = (user: any) => {
-        // Navigate to edit user page with user data
         navigate('/admin/edit-user', { state: { user } });
     };
 
@@ -184,21 +179,23 @@ const Users: React.FC = () => {
                         Back to Dashboard
                     </button>
 
-                    <div className="bg-white rounded-lg shadow-sm p-6">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold text-gray-800">Users</h2>
-                            <div className="flex gap-2">
+                    <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+                            <h2 className="text-xl md:text-2xl font-semibold text-gray-800">Users</h2>
+                            <div className="flex flex-col sm:flex-row gap-2">
                                 <button
+                                    type="button"
                                     onClick={generatePDF}
-                                    className="btn btn-secondary flex items-center"
+                                    className="btn btn-secondary flex items-center justify-center"
                                     disabled={loading || generating}
                                 >
                                     <Download size={16} className="mr-2" />
                                     {generating ? 'Generating PDF...' : 'Download PDF'}
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => navigate('/setup')}
-                                    className="btn btn-primary flex items-center"
+                                    className="btn btn-primary flex items-center justify-center"
                                     disabled={loading}
                                 >
                                     <UserPlus size={16} className="mr-2" />
@@ -248,47 +245,63 @@ const Users: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredUsers.map((user) => (
-                                        <tr key={user.email}>
-                                            <td className="flex items-center">
-                                                <div className="w-8 h-8 rounded-full bg-[#4B0082] text-white flex items-center justify-center mr-3">
-                                                    <span className="font-semibold text-xs">
-                                                        {user.name.substring(0, 2).toUpperCase()}
-                                                    </span>
-                                                </div>
-                                                {user.name}
-                                            </td>
-                                            <td>{user.email}</td>
-                                            <td>
-                                                <span className={`badge ${user.role === 'admin' ? 'badge-error' :
-                                                    user.role === 'faculty' ? 'badge-info' :
-                                                        'badge-success'
-                                                    }`}>
-                                                    {user.role}
-                                                </span>
-                                            </td>
-                                            <td>{user.department || '-'}</td>
-                                            <td>
-                                                <span className="badge badge-success">Active</span>
-                                            </td>
-                                            <td className="text-right">
-                                                <button
-                                                    onClick={() => handleEditUser(user)}
-                                                    className="btn btn-icon btn-ghost"
-                                                    disabled={loading}
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteUser(user)}
-                                                    className="btn btn-icon btn-ghost text-red-600"
-                                                    disabled={loading || user.email === currentUser?.email}
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                    {filteredUsers.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={6} className="text-center py-8 text-gray-500">
+                                                No users found
                                             </td>
                                         </tr>
-                                    ))}
+                                    ) : (
+                                        filteredUsers.map((user) => (
+                                            <tr key={user.email}>
+                                                <td>
+                                                    <div className="flex items-center">
+                                                        <div className="w-8 h-8 rounded-full bg-[#4B0082] text-white flex items-center justify-center mr-3 flex-shrink-0">
+                                                            <span className="font-semibold text-xs">
+                                                                {user.name.substring(0, 2).toUpperCase()}
+                                                            </span>
+                                                        </div>
+                                                        <span className="truncate">{user.name}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="truncate max-w-[200px]">{user.email}</td>
+                                                <td>
+                                                    <span className={`badge ${user.role === 'admin' ? 'badge-error' :
+                                                        user.role === 'faculty' ? 'badge-info' :
+                                                            'badge-success'
+                                                        }`}>
+                                                        {user.role}
+                                                    </span>
+                                                </td>
+                                                <td className="truncate max-w-[150px]">{user.department || '-'}</td>
+                                                <td>
+                                                    <span className="badge badge-success">Active</span>
+                                                </td>
+                                                <td>
+                                                    <div className="flex items-center justify-end space-x-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleEditUser(user)}
+                                                            className="btn btn-icon btn-ghost p-2"
+                                                            disabled={loading}
+                                                            title="Edit user"
+                                                        >
+                                                            <Edit2 size={16} />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteUser(user)}
+                                                            className="btn btn-icon btn-ghost p-2 text-red-600 hover:text-red-700"
+                                                            disabled={loading || user.email === currentUser?.email}
+                                                            title="Delete user"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>

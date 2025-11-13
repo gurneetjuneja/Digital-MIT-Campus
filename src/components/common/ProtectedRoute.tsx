@@ -12,7 +12,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   const { currentUser, loading, error } = useAuth();
   const location = useLocation();
 
-  // Show loading spinner while authentication state is being determined
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -21,7 +20,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
     );
   }
 
-  // Handle authentication error
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
@@ -36,12 +34,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
     );
   }
 
-  // Redirect to login if not authenticated
   if (!currentUser) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Get the default route for the user's role
   const getDefaultRoute = (role: string) => {
     switch (role) {
       case 'security':
@@ -55,17 +51,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
     }
   };
 
-  // Check if user has required role
   if (!allowedRoles.includes(currentUser.role)) {
-    // If user is authenticated but doesn't have the required role,
-    // redirect them to their default dashboard
     const defaultRoute = getDefaultRoute(currentUser.role);
     if (location.pathname !== defaultRoute) {
       return <Navigate to={defaultRoute} replace />;
     }
   }
 
-  // Render protected content
   return <>{children}</>;
 };
 

@@ -7,7 +7,6 @@ import {
 
 const auth = getAuth();
 
-// Function to determine role from email
 const getRoleFromEmail = (email: string) => {
     if (email.endsWith('@security.com')) return 'security';
     if (email.endsWith('@faculty.com')) return 'faculty';
@@ -15,13 +14,11 @@ const getRoleFromEmail = (email: string) => {
     return null;
 };
 
-// Function to get department based on role
 const getDepartmentFromRole = (role: string) => {
     switch (role) {
         case 'security':
             return 'Security Department';
         case 'faculty':
-            // Randomly assign department for faculty
             const departments = ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil'];
             return departments[Math.floor(Math.random() * departments.length)];
         case 'admin':
@@ -38,15 +35,13 @@ export const createUser = async (email: string, password: string) => {
             throw new Error('Invalid email domain. Must end with @security.com, @faculty.com, or @admin.com');
         }
 
-        // Create user in Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log(`✅ Created auth account for: ${email}`);
 
-        // Create user document in Firestore
         const userDocRef = doc(db, 'users', email);
         await setDoc(userDocRef, {
             email: email,
-            name: email.split('@')[0], // Use part before @ as name
+            name: email.split('@')[0],
             role: role,
             department: getDepartmentFromRole(role),
             createdAt: new Date(),
@@ -54,9 +49,12 @@ export const createUser = async (email: string, password: string) => {
         }, { merge: true });
         console.log(`✅ Added Firestore record for: ${email}`);
 
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         return {
             success: true,
-            message: `User created successfully with ${role} role`
+            message: `User created successfully with ${role} role`,
+            userCredential: userCredential
         };
     } catch (error) {
         console.error('❌ Error creating user:', error);
@@ -64,7 +62,6 @@ export const createUser = async (email: string, password: string) => {
     }
 };
 
-// Example users setup
 export const setupDefaultUsers = async () => {
     try {
         const defaultUsers = [

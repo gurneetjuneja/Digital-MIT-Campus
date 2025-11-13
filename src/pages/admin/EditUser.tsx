@@ -40,7 +40,7 @@ const EditUser: React.FC = () => {
                 department: formData.department || null
             });
 
-            await fetchUsers(); // Refresh users list
+            await fetchUsers();
             toast.success('User updated successfully');
             navigate('/admin/users');
         } catch (error) {
@@ -58,18 +58,19 @@ const EditUser: React.FC = () => {
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Header title="Edit User" />
 
-                <main className="flex-1 overflow-y-auto p-4">
+                <main className="flex-1 overflow-y-auto p-4 md:p-6">
                     <button
+                        type="button"
                         onClick={() => navigate('/admin/users')}
-                        className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+                        className="flex items-center text-[#4B0082] hover:text-[#6B238E] mb-4 transition-colors"
                     >
                         <ArrowLeft size={16} className="mr-1" />
                         Back to Users
                     </button>
 
                     <div className="max-w-2xl mx-auto">
-                        <div className="bg-white rounded-lg shadow-sm p-6">
-                            <h2 className="text-xl font-semibold text-gray-800 mb-6">Edit User Details</h2>
+                        <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+                            <h2 className="text-xl md:text-2xl font-semibold text-[#4B0082] mb-6">Edit User Details</h2>
 
                             <form onSubmit={handleSubmit}>
                                 <div className="space-y-4">

@@ -22,17 +22,14 @@ const SecurityDashboard: React.FC = () => {
   useEffect(() => {
     if (!loading && gatePasses) {
       try {
-        // Get passes that need security reapproval
         const reapprovalPasses = getGatePassesByCurrentStage('gateReapproval') || [];
         setPendingReapproval(reapprovalPasses);
         
-        // Get recent passes (sorted by creation date)
         const sorted = [...(gatePasses || [])].sort((a, b) => 
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         ).slice(0, 5);
         setRecentPasses(sorted);
         
-        // Calculate total and today's passes
         setTotalPasses(gatePasses.length);
         const today = new Date().toISOString().split('T')[0];
         const todayCount = gatePasses.filter(pass => 

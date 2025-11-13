@@ -2,7 +2,6 @@ import { GatePass, User } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { format, subDays } from 'date-fns';
 
-// Mock users
 export const mockUsers: User[] = [
   {
     id: '1',
@@ -60,7 +59,6 @@ export const mockUsers: User[] = [
   }
 ];
 
-// Generate mock gate passes
 const generateMockPasses = (): GatePass[] => {
   const statuses: ('pending' | 'approved' | 'rejected')[] = ['pending', 'approved', 'rejected'];
   const departments = ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil'];
@@ -147,14 +145,12 @@ const generateMockPasses = (): GatePass[] => {
 
 export const mockGatePasses: GatePass[] = generateMockPasses();
 
-// For statistics/dashboard data
 export const dashboardStats = {
   totalPasses: mockGatePasses.length,
   pendingApprovals: mockGatePasses.filter(pass => pass.status === 'pending').length,
   approvedPasses: mockGatePasses.filter(pass => pass.status === 'approved').length,
   rejectedPasses: mockGatePasses.filter(pass => pass.status === 'rejected').length,
   
-  // Stage distribution
   stageDistribution: {
     gateEntry: mockGatePasses.filter(pass => pass.currentStage === 'gateEntry').length,
     facultyApproval: mockGatePasses.filter(pass => pass.currentStage === 'facultyApproval').length,
@@ -163,7 +159,6 @@ export const dashboardStats = {
     completed: mockGatePasses.filter(pass => pass.currentStage === 'completed').length
   },
   
-  // Department distribution
   departmentDistribution: {
     'Computer Science': mockGatePasses.filter(pass => pass.department === 'Computer Science').length,
     'Information Technology': mockGatePasses.filter(pass => pass.department === 'Information Technology').length,

@@ -4,7 +4,9 @@ import Sidebar from '../../components/common/Sidebar';
 import Header from '../../components/common/Header';
 import { useGatePass } from '../../contexts/GatePassContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { PlusCircle, Trash2, ArrowLeft, Save, Printer, Download } from 'lucide-react';
+import { useVCRS } from '../../contexts/VCRSContext';
+import QRCodeScanner from '../../components/common/QRCodeScanner';
+import { PlusCircle, Trash2, ArrowLeft, Save, Printer, Download, QrCode, CheckCircle } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import { generateGatePassPDF } from '../../utils/pdfGenerator';
@@ -31,6 +33,7 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
     approveSecurityRecheck,
     rejectSecurityRecheck 
   } = useGatePass();
+  const { getBudgetApprovalByQRCode, linkBudgetToGatePass } = useVCRS();
   const navigate = useNavigate();
   
   const [items, setItems] = useState<ItemState[]>([
@@ -41,8 +44,10 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
   const [isLoading, setIsLoading] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showQRScanner, setShowQRScanner] = useState(false);
+  const [scannedBudgetApproval, setScannedBudgetApproval] = useState<any>(null);
+  const hasNotifiedRef = React.useRef(false);
   
-  // Fetch gate pass data if in reapproval mode
   useEffect(() => {
     if (isReapproval && id) {
       const gatePass = getGatePassById(id);
@@ -57,6 +62,58 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
       }
     }
   }, [isReapproval, id, getGatePassById, navigate]);
+
+  useEffect(() => {
+    if (!showQRScanner) {
+      hasNotifiedRef.current = false;
+    }
+  }, [showQRScanner]);
+
+  const handleQRScan = (qrCodeData: string) => {
+    if (hasNotifiedRef.current) {
+      return;
+    }
+
+    const budgetApproval = getBudgetApprovalByQRCode(qrCodeData);
+    
+    if (!budgetApproval) {
+      if (!hasNotifiedRef.current) {
+        hasNotifiedRef.current = true;
+        toast.error('Invalid QR code. Budget approval not found.');
+      }
+      setShowQRScanner(false);
+      return;
+    }
+
+    if (budgetApproval.status !== 'approved') {
+      if (!hasNotifiedRef.current) {
+        hasNotifiedRef.current = true;
+        toast.error('Budget approval is not approved yet. Please wait for approval.');
+      }
+      setShowQRScanner(false);
+      return;
+    }
+
+    if (budgetApproval.gatePassId) {
+      if (!hasNotifiedRef.current) {
+        hasNotifiedRef.current = true;
+        toast.error('This budget approval has already been used for a gate pass.');
+      }
+      setShowQRScanner(false);
+      return;
+    }
+
+    hasNotifiedRef.current = true;
+    setScannedBudgetApproval(budgetApproval);
+    setSubmitter({
+      name: budgetApproval.facultyName,
+      contact: '',
+      purpose: budgetApproval.purpose
+    });
+    setDepartment(budgetApproval.department);
+    setShowQRScanner(false);
+    toast.success('Budget approval scanned successfully! Form pre-filled.');
+  };
   
   const handleAddItem = () => {
     setItems([...items, { id: uuidv4(), name: '', quantity: 1, description: '' }]);
@@ -79,7 +136,6 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
     if (items.some(item => !item.name)) {
       toast.error('All items must have a name');
       return;
@@ -98,7 +154,7 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
     setIsLoading(true);
     
     try {
-      await createGatePass(
+      const createdGatePass = await createGatePass(
         {
           department,
           submittedBy: submitter
@@ -106,8 +162,15 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
         items
       );
       
+      if (scannedBudgetApproval) {
+        try {
+          await linkBudgetToGatePass(scannedBudgetApproval.id, createdGatePass.id);
+        } catch (linkError) {
+          console.error('Error linking budget to gate pass:', linkError);
+        }
+      }
+      
       toast.success('Gate pass created successfully');
-      // Add a small delay before navigation to ensure Firestore update is complete
       setTimeout(() => {
         navigate('/security');
       }, 1000);
@@ -126,7 +189,6 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
     try {
       await approveSecurityRecheck(id);
       toast.success('Items verified successfully');
-      // Add a small delay before navigation to ensure Firestore update is complete
       setTimeout(() => {
         navigate('/security');
       }, 1000);
@@ -149,7 +211,6 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
     try {
       await rejectSecurityRecheck(id, rejectReason);
       toast.success('Gate pass rejected');
-      // Add a small delay before navigation to ensure Firestore update is complete
       setTimeout(() => {
         navigate('/security');
       }, 1000);
@@ -178,9 +239,37 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
           </button>
           
           <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">
-              {isReapproval ? "Verify Faculty-Approved Items" : "Create New Gate Pass"}
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-800">
+                {isReapproval ? "Verify Faculty-Approved Items" : "Create New Gate Pass"}
+              </h2>
+              {!isReapproval && (
+                <button
+                  type="button"
+                  onClick={() => setShowQRScanner(true)}
+                  className="btn btn-outline flex items-center"
+                >
+                  <QrCode size={16} className="mr-2" />
+                  Scan QR Code
+                </button>
+              )}
+            </div>
+
+            {scannedBudgetApproval && !isReapproval && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="flex items-start">
+                  <CheckCircle size={20} className="text-green-600 mr-2 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-medium text-green-800 mb-1">Budget Approval Scanned</p>
+                    <p className="text-sm text-green-700">
+                      Budget ID: <strong>{scannedBudgetApproval.budgetId}</strong> | 
+                      Amount: <strong>₹{scannedBudgetApproval.budgetAmount.toLocaleString()}</strong> | 
+                      Faculty: <strong>{scannedBudgetApproval.facultyName}</strong>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             
             <form onSubmit={handleSubmit}>
               <div className="mb-6">
@@ -462,8 +551,14 @@ const CreateGatePass: React.FC<CreateGatePassProps> = ({ isReapproval = false })
           </div>
         </main>
       </div>
+
+      {showQRScanner && (
+        <QRCodeScanner
+          onScanSuccess={handleQRScan}
+          onClose={() => setShowQRScanner(false)}
+        />
+      )}
       
-      {/* Reject Modal */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">

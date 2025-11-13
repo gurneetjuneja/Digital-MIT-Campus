@@ -17,7 +17,7 @@ const GatePassCard: React.FC<GatePassCardProps> = ({ gatePass, userRole }) => {
       case 'rejected':
         return <span className="badge badge-error"><X size={12} className="mr-1" /> Rejected</span>;
       case 'pending':
-        return <span className="badge badge-warning"><Clock size={12} className="mr-1" /> Pending</span>;
+        return <span className="bg-pink-100 text-pink-700 px-2.5 py-1 rounded-full text-xs font-medium">Pending</span>;
       default:
         return null;
     }
@@ -74,37 +74,47 @@ const GatePassCard: React.FC<GatePassCardProps> = ({ gatePass, userRole }) => {
   );
   
   return (
-    <div className={`card ${needsAction ? 'border-l-4 border-l-blue-500' : ''} card-hover`}>
-      <div className="flex justify-between items-start mb-2">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800">{gatePass.passNumber}</h3>
-          <p className="text-sm text-gray-600">{gatePass.submittedBy.purpose}</p>
+    <div className={`bg-white rounded-lg shadow-sm p-5 ${needsAction ? 'border-l-4 border-l-blue-500' : ''} flex flex-col transition-shadow hover:shadow-md`}>
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xl font-bold text-gray-900">
+            {gatePass.passNumber}
+          </h3>
+          <div className="flex items-center gap-2">
+            <Clock size={18} className="text-orange-400" />
+            {getStatusBadge(gatePass.status)}
+          </div>
         </div>
-        <div>
-          {getStatusBadge(gatePass.status)}
-        </div>
+        <p className="text-sm text-gray-500">{gatePass.submittedBy.purpose}</p>
       </div>
       
-      <div className="mb-4">
-        <p className="text-sm text-gray-500">Created: {format(parseISO(gatePass.createdAt), 'MMM dd, yyyy')}</p>
-        <p className="text-sm text-gray-500">Department: {gatePass.department}</p>
-        <p className="text-sm text-gray-500">Items: {gatePass.items.length}</p>
+      <div className="mb-4 space-y-2">
+        <p className="text-sm text-gray-700">
+          Created: <span className="text-gray-900 font-medium">{format(parseISO(gatePass.createdAt), 'MMM dd, yyyy')}</span>
+        </p>
+        <p className="text-sm text-gray-700">
+          Department: <span className="text-gray-900 font-medium">{gatePass.department}</span>
+        </p>
+        <p className="text-sm text-gray-700">
+          Items: <span className="text-gray-900 font-medium">{gatePass.items.length}</span>
+        </p>
       </div>
       
-      <div className="flex justify-between items-center">
-        <div className="flex space-x-1 text-xs">
-          <div className={`h-1.5 w-8 rounded ${gatePass.approvalStages.gateEntry.status === 'approved' ? 'bg-green-500' : gatePass.approvalStages.gateEntry.status === 'rejected' ? 'bg-red-500' : 'bg-gray-300'}`}></div>
-          <div className={`h-1.5 w-8 rounded ${gatePass.approvalStages.facultyApproval.status === 'approved' ? 'bg-green-500' : gatePass.approvalStages.facultyApproval.status === 'rejected' ? 'bg-red-500' : gatePass.approvalStages.facultyApproval.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-300'}`}></div>
-          <div className={`h-1.5 w-8 rounded ${gatePass.approvalStages.gateReapproval.status === 'approved' ? 'bg-green-500' : gatePass.approvalStages.gateReapproval.status === 'rejected' ? 'bg-red-500' : gatePass.approvalStages.gateReapproval.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-300'}`}></div>
-          <div className={`h-1.5 w-8 rounded ${gatePass.approvalStages.adminApproval.status === 'approved' ? 'bg-green-500' : gatePass.approvalStages.adminApproval.status === 'rejected' ? 'bg-red-500' : gatePass.approvalStages.adminApproval.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-300'}`}></div>
+      <div className="mb-3 pt-3 border-t border-gray-200">
+        <div className="flex space-x-1.5 mb-3">
+          <div className={`h-3 w-full rounded ${gatePass.approvalStages.gateEntry.status === 'approved' ? 'bg-green-500' : gatePass.approvalStages.gateEntry.status === 'rejected' ? 'bg-red-500' : 'bg-gray-300'}`} title="Gate Entry"></div>
+          <div className={`h-3 w-full rounded ${gatePass.approvalStages.facultyApproval.status === 'approved' ? 'bg-green-500' : gatePass.approvalStages.facultyApproval.status === 'rejected' ? 'bg-red-500' : gatePass.approvalStages.facultyApproval.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-300'}`} title="Faculty Approval"></div>
+          <div className={`h-3 w-full rounded ${gatePass.approvalStages.gateReapproval.status === 'approved' ? 'bg-green-500' : gatePass.approvalStages.gateReapproval.status === 'rejected' ? 'bg-red-500' : gatePass.approvalStages.gateReapproval.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-300'}`} title="Gate Reapproval"></div>
+          <div className={`h-3 w-full rounded ${gatePass.approvalStages.adminApproval.status === 'approved' ? 'bg-green-500' : gatePass.approvalStages.adminApproval.status === 'rejected' ? 'bg-red-500' : gatePass.approvalStages.adminApproval.status === 'pending' ? 'bg-yellow-500' : 'bg-gray-300'}`} title="Admin Approval"></div>
+          <div className={`h-3 w-full rounded ${gatePass.currentStage === 'completed' ? 'bg-green-500' : 'bg-gray-300'}`} title="Completed"></div>
         </div>
         
         <Link 
           to={getActionUrl()} 
-          className={`btn ${needsAction ? 'btn-primary' : 'btn-outline'} flex items-center text-xs`}
+          className={`btn ${needsAction ? 'bg-[#4B0082] hover:bg-[#6B238E] text-white' : 'btn-outline'} flex items-center justify-center text-sm px-4 py-2.5 w-full`}
         >
           {getActionLabel()}
-          <ArrowRight size={14} className="ml-1" />
+          <ArrowRight size={16} className="ml-2" />
         </Link>
       </div>
     </div>

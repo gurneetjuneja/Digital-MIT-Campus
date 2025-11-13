@@ -52,7 +52,6 @@ export const GatePassProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [error, setError] = useState<string | null>(null);
   const { currentUser } = useAuth();
 
-  // Load and listen to gate passes from Firestore
   useEffect(() => {
     const gatePassesRef = collection(db, 'gatePasses');
     const q = query(gatePassesRef, orderBy('createdAt', 'desc'));
@@ -84,25 +83,17 @@ export const GatePassProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const getGatePassesByCurrentStage = (stage: ApprovalStage) => {
     return gatePasses.filter(pass => {
-      // Basic stage check
       if (pass.currentStage !== stage) return false;
 
-      // For gate reapproval stage, add additional checks
       if (stage === 'gateReapproval') {
-        // Only show passes that:
-        // 1. Have faculty approval
-        // 2. Haven't been rejected at any stage
-        // 3. Haven't been completed yet
         return (
           pass.approvalStages.facultyApproval.status === 'approved' &&
           pass.status !== 'rejected' &&
           pass.currentStage !== 'completed' &&
-          // If gate reapproval status is 'not-started' or 'pending', show it
           ['not-started', 'pending'].includes(pass.approvalStages.gateReapproval.status)
         );
       }
 
-      // For faculty approval stage
       if (stage === 'facultyApproval') {
         return (
           pass.approvalStages.gateEntry.status === 'approved' &&
@@ -111,7 +102,6 @@ export const GatePassProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         );
       }
 
-      // For admin approval stage
       if (stage === 'adminApproval') {
         return (
           pass.approvalStages.gateReapproval.status === 'approved' &&
@@ -141,7 +131,6 @@ export const GatePassProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         throw new Error('User not authenticated');
       }
 
-      // Generate gate pass number
       const today = new Date();
       const passNumber = `GP-${today.getFullYear()}-${today.getMonth() + 1}-${Math.floor(Math.random() * 1000)}`;
       
@@ -176,7 +165,6 @@ export const GatePassProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         status: 'pending'
       };
       
-      // Add to Firestore
       const docRef = await addDoc(collection(db, 'gatePasses'), {
         ...newGatePass,
         createdAt: serverTimestamp()

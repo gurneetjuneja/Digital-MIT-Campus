@@ -60,3 +60,54 @@ export interface GatePass {
 
 export type ApprovalStage = 'gateEntry' | 'facultyApproval' | 'gateReapproval' | 'adminApproval' | 'completed';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'not-started';
+
+export type BudgetApprovalStage = 'dean' | 'viceChancellor' | 'chancellor';
+export type BudgetApprovalStatus = 'pending' | 'approved' | 'rejected';
+
+export interface BudgetApprovalStageData {
+  status: BudgetApprovalStatus;
+  timestamp?: string;
+  approvedBy?: string;
+  remarks?: string;
+}
+
+export interface BudgetApproval {
+  id: string;
+  budgetId: string;
+  facultyId: string;
+  facultyName: string;
+  department: string;
+  purpose: string;
+  budgetAmount: number;
+  allottedBudget: number;
+  remainingBudget: number;
+  budgetDocumentUrl?: string;
+  budgetDocumentName?: string;
+  approvalStages: {
+    dean: BudgetApprovalStageData;
+    viceChancellor: BudgetApprovalStageData;
+    chancellor: BudgetApprovalStageData;
+  };
+  currentStage: BudgetApprovalStage | 'completed';
+  qrCode?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  completedAt?: string;
+  gatePassId?: string;
+}
+
+export interface VCRSSubmission {
+  purpose: string;
+  budgetAmount: number;
+  budgetDocument: File | null;
+  department: string;
+}
+
+export interface FacultyBudget {
+  facultyId: string;
+  facultyName: string;
+  department: string;
+  allottedBudget: number;
+  usedBudget: number;
+  remainingBudget: number;
+}
